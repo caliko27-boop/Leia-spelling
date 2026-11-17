@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spell It! Sight word practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #E6F2EF;
+  --mat: #CFE6E0;
+  --ink: #1F3A5F;
+  --ink-soft: #4A6280;
+  --card: #FFFFFF;
+  --block: #F4C542;
+  --block-edge: #C9952A;
+  --block-ink: #1F3A5F;
+  --slot: #FFFFFF;
+  --slot-line: #9DBDB5;
+  --good: #2E9E6A;
+  --oops: #D2405F;
+  --button: #1F3A5F;
+  --button-ink: #FFFFFF;
+  --quiet: #FFFFFF;
+  --focus: #2E7DD1;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #12232E;
+    --mat: #1A3140;
+    --ink: #EAF2F5;
+    --ink-soft: #A9BFCB;
+    --card: #203B4C;
+    --block: #F4C542;
+    --block-edge: #B88520;
+    --block-ink: #1F3A5F;
+    --slot: #16293A;
+    --slot-line: #4E7085;
+    --good: #4CC28C;
+    --oops: #F06D88;
+    --button: #F4C542;
+    --button-ink: #1F3A5F;
+    --quiet: #203B4C;
+    --focus: #7DB8FF;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12232E; --mat: #1A3140; --ink: #EAF2F5; --ink-soft: #A9BFCB; --card: #203B4C;
+  --block: #F4C542; --block-edge: #B88520; --block-ink: #1F3A5F; --slot: #16293A; --slot-line: #4E7085;
+  --good: #4CC28C; --oops: #F06D88; --button: #F4C542; --button-ink: #1F3A5F; --quiet: #203B4C; --focus: #7DB8FF;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Andika", "Trebuchet MS", "Verdana", sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+main { max-width: 40rem; margin: 0 auto; padding: 1.25rem 1rem 2.5rem; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+h1 { font-size: 2.25rem; line-height: 1.1; margin: 0.25rem 0 0.5rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem; line-height: 1.2; margin: 0 0 0.5rem; }
+p { margin: 0 0 1rem; }
+.soft { color: var(--ink-soft); }
+
+/* Title made of blocks */
+.title-blocks { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 0.5rem 0 1rem; }
+.title-blocks span {
+  display: grid; place-items: center;
+  width: 2.75rem; height: 2.75rem; border-radius: 0.5rem;
+  background: var(--block); color: var(--block-ink);
+  font-weight: 700; font-size: 1.6rem;
+  box-shadow: 0 4px 0 var(--block-edge);
+}
+.title-blocks span:nth-child(2n) { transform: rotate(-4deg); }
+.title-blocks span:nth-child(3n) { transform: rotate(3deg) translateY(2px); }
+
+textarea {
+  width: 100%; min-height: 11rem; resize: vertical;
+  font: inherit; font-size: 1.25rem; line-height: 1.6;
+  padding: 0.75rem 0.9rem; border-radius: 0.75rem;
+  border: 2px solid var(--slot-line); background: var(--slot); color: var(--ink);
+}
+.count { font-size: 1rem; margin: 0.4rem 0 1rem; }
+.count.over { color: var(--oops); font-weight: 700; }
+.options { display: flex; flex-direction: column; gap: 0.6rem; margin: 0 0 1.5rem; }
+.options label { display: flex; gap: 0.6rem; align-items: center; font-size: 1.05rem; }
+.options input { width: 1.4rem; height: 1.4rem; accent-color: var(--good); }
+
+.btn {
+  border: 0; border-radius: 999px; padding: 0.85rem 1.6rem;
+  background: var(--button); color: var(--button-ink);
+  font-weight: 700; font-size: 1.25rem;
+  min-height: 3.25rem;
+}
+.btn.quiet { background: var(--quiet); color: var(--ink); border: 2px solid var(--slot-line); font-size: 1.05rem; padding: 0.6rem 1.1rem; min-height: 2.9rem; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.row { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+.row.center { justify-content: center; }
+
+/* Practice */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.progress { font-weight: 700; color: var(--ink-soft); }
+.stars { font-size: 1.1rem; letter-spacing: 0.1em; min-height: 1.6rem; }
+
+.mat {
+  background: var(--mat); border-radius: 1.25rem;
+  padding: 1.5rem 1rem 1.75rem; text-align: center;
+  min-height: 20rem;
+  display: flex; flex-direction: column; justify-content: center; gap: 1.25rem;
+}
+.flash-word {
+  font-size: clamp(3.5rem, 18vw, 6rem); font-weight: 700; line-height: 1;
+  background: var(--card); border-radius: 1rem; padding: 1.5rem 1rem;
+  overflow-wrap: anywhere;
+}
+.timer { height: 0.6rem; border-radius: 999px; background: var(--slot-line); overflow: hidden; }
+.timer i { display: block; height: 100%; width: 100%; background: var(--good); transform-origin: left; }
+.timer.run i { animation: drain 3s linear forwards; }
+@keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+.prompt { font-size: 1.25rem; font-weight: 700; margin: 0; }
+.slots { display: flex; gap: 0.45rem; justify-content: center; flex-wrap: wrap; }
+.slot {
+  width: 3.3rem; height: 3.8rem; border-radius: 0.6rem;
+  border: 3px dashed var(--slot-line); background: var(--slot);
+  font-size: 2.1rem; font-weight: 700; color: var(--ink);
+  display: grid; place-items: center; padding: 0;
+}
+.slot.filled { border-style: solid; border-color: var(--block-edge); background: var(--block); color: var(--block-ink); }
+.slot.next { border-color: var(--focus); }
+.slot.wrong { border-color: var(--oops); background: var(--oops); color: #fff; }
+.slot.right { border-color: var(--good); background: var(--good); color: #fff; }
+
+.tiles { display: flex; gap: 0.55rem; justify-content: center; flex-wrap: wrap; }
+.tile {
+  width: 3.6rem; height: 3.6rem; border-radius: 0.65rem; border: 0;
+  background: var(--block); color: var(--block-ink);
+  font-size: 2.1rem; font-weight: 700;
+  box-shadow: 0 5px 0 var(--block-edge);
+  transition: transform 80ms ease, box-shadow 80ms ease;
+}
+.tile:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 var(--block-edge); }
+.tile:disabled { visibility: hidden; }
+
+.tools { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.feedback { font-size: 1.5rem; font-weight: 700; min-height: 2.25rem; margin: 0; }
+.feedback.good { color: var(--good); }
+.feedback.oops { color: var(--oops); }
+
+.shake { animation: shake 0.4s ease; }
+@keyframes shake { 0%,100% { transform: translateX(0);} 25% { transform: translateX(-8px);} 75% { transform: translateX(8px);} }
+.pop { animation: pop 0.45s ease; }
+@keyframes pop { 0% { transform: scale(1);} 50% { transform: scale(1.12);} 100% { transform: scale(1);} }
+
+/* Results */
+.big-stars { font-size: 3rem; text-align: center; margin: 0.5rem 0 1rem; }
+.word-list { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0 1.25rem; padding: 0; list-style: none; }
+.word-list li { background: var(--card); border-radius: 0.6rem; padding: 0.35rem 0.8rem; font-size: 1.25rem; font-weight: 700; }
+
+@media (max-width: 420px) {
+  .slot { width: 2.8rem; height: 3.3rem; font-size: 1.8rem; }
+  .tile { width: 3.1rem; height: 3.1rem; font-size: 1.8rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shake, .pop { animation: none; }
+  .timer.run i { animation: none; transform: scaleX(0.5); }
+  .tile { transition: none; }
+}
+</style>
+</head>
+<body>
+<main>
+
+  <!-- Setup -->
+  <section id="setup">
+    <div class="title-blocks" aria-hidden="true"><span>S</span><span>p</span><span>e</span><span>l</span><span>l</span><span>!</span></div>
+    <h1>Sight word practice</h1>
+    <p class="soft">Type or paste up to 20 words. Put each one on its own line, or separate them with commas.</p>
+    <label for="words" class="soft" style="display:block;margin-bottom:0.35rem;font-weight:700;">This week’s words</label>
+    <textarea id="words" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+    <p class="count" id="count" aria-live="polite"></p>
+    <div class="options">
+      <label><input type="checkbox" id="optExtra" checked> Add a few extra letters to choose from</label>
+      <label><input type="checkbox" id="optShuffle" checked> Mix up the word order</label>
+      <label><input type="checkbox" id="optSpeak" checked> Say each word out loud</label>
+    </div>
+    <div class="row">
+      <button class="btn" id="startBtn">Start practice</button>
+    </div>
+  </section>
+
+  <!-- Practice -->
+  <section id="practice" hidden>
+    <div class="topbar">
+      <button class="btn quiet" id="backBtn">Change words</button>
+      <span class="progress" id="progress"></span>
+    </div>
+    <div class="stars" id="stars" aria-label="Words spelled"></div>
+
+    <div class="mat" id="mat">
+      <!-- Flash phase -->
+      <div id="flashPhase">
+        <p class="prompt" style="margin-bottom:1rem;">Look at the word!</p>
+        <div class="flash-word" id="flashWord"></div>
+        <div class="timer" id="timer" style="margin-top:1rem;"><i></i></div>
+      </div>
+
+      <!-- Spell phase -->
+      <div id="spellPhase" hidden>
+        <p class="prompt" style="margin-bottom:1rem;">Now spell it!</p>
+        <div class="slots" id="slots"></div>
+        <p class="feedback" id="feedback" aria-live="polite" style="margin-top:0.75rem;"></p>
+        <div class="tiles" id="tiles" style="margin-top:0.5rem;"></div>
+        <div class="tools" style="margin-top:1.25rem;">
+          <button class="btn quiet" id="hearBtn">🔊 Hear it</button>
+          <button class="btn quiet" id="peekBtn">👀 Peek</button>
+          <button class="btn quiet" id="undoBtn">⌫ Undo</button>
+        </div>
+        <div class="row center" style="margin-top:1rem;">
+          <button class="btn" id="nextBtn" hidden>Next word</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" hidden>
+    <h1>All done!</h1>
+    <div class="big-stars" id="bigStars" aria-hidden="true"></div>
+    <p id="summary"></p>
+    <div id="trickyWrap">
+      <h2>Words to practice again</h2>
+      <ul class="word-list" id="trickyList"></ul>
+    </div>
+    <div class="row">
+      <button class="btn" id="againBtn">Practice all again</button>
+      <button class="btn quiet" id="trickyBtn">Practice tricky words</button>
+      <button class="btn quiet" id="editBtn">Change words</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  const MAX_WORDS = 20;
+  const FLASH_MS = 3000;
+  const STORE_KEY = "spell-it-words";
+  const SAMPLE = "the, and, said, was, you, they, have, come, here, look";
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    setup: $("setup"), practice: $("practice"), results: $("results"),
+    words: $("words"), count: $("count"), start: $("startBtn"),
+    optExtra: $("optExtra"), optShuffle: $("optShuffle"), optSpeak: $("optSpeak"),
+    back: $("backBtn"), progress: $("progress"), stars: $("stars"),
+    flashPhase: $("flashPhase"), flashWord: $("flashWord"), timer: $("timer"),
+    spellPhase: $("spellPhase"), slots: $("slots"), tiles: $("tiles"), feedback: $("feedback"),
+    hear: $("hearBtn"), peek: $("peekBtn"), undo: $("undoBtn"), next: $("nextBtn"),
+    bigStars: $("bigStars"), summary: $("summary"), trickyWrap: $("trickyWrap"), trickyList: $("trickyList"),
+    again: $("againBtn"), trickyBtn: $("trickyBtn"), edit: $("editBtn")
+  };
+
+  let list = [];        // words in this round
+  let allWords = [];    // full word list
+  let index = 0;
+  let target = "";
+  let placed = [];      // [{letter, tileIndex}]
+  let tries = 0;
+  let tricky = new Set();
+  let firstTry = 0;
+  let flashTimer = null;
+  let locked = false;
+
+  // ---------- storage ----------
+  function load() {
+    try {
+      const saved = localStorage.getItem(STORE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        els.words.value = data.text || "";
+        if (typeof data.extra === "boolean") els.optExtra.checked = data.extra;
+        if (typeof data.shuffle === "boolean") els.optShuffle.checked = data.shuffle;
+        if (typeof data.speak === "boolean") els.optSpeak.checked = data.speak;
+        return;
+      }
+    } catch (e) {}
+    els.words.value = SAMPLE.split(", ").join("\n");
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        text: els.words.value, extra: els.optExtra.checked,
+        shuffle: els.optShuffle.checked, speak: els.optSpeak.checked
+      }));
+    } catch (e) {}
+  }
+
+  // ---------- word parsing ----------
+  function parseWords(text) {
+    const seen = new Set();
+    const out = [];
+    text.split(/[\n,;]+/).forEach((raw) => {
+      raw.trim().split(/\s+/).forEach((w) => {
+        const clean = w.toLowerCase().replace(/[^a-z]/g, "");
+        if (clean && !seen.has(clean)) { seen.add(clean); out.push(clean); }
+      });
+    });
+    return out;
+  }
+  function updateCount() {
+    const words = parseWords(els.words.value);
+    const n = words.length;
+    els.count.classList.toggle("over", n > MAX_WORDS);
+    if (n === 0) els.count.textContent = "Add at least one word to start.";
+    else if (n > MAX_WORDS) els.count.textContent = n + " words. Only the first 20 will be used.";
+    else els.count.textContent = n + (n === 1 ? " word" : " words") + " ready.";
+    els.start.disabled = n === 0;
+  }
+
+  // ---------- speech ----------
+  let voice = null;
+  function pickVoice() {
+    if (!("speechSynthesis" in window)) return;
+    const voices = speechSynthesis.getVoices();
+    voice = voices.find(v => /en[-_]US/i.test(v.lang) && /samantha|female|google us english|aria|jenny/i.test(v.name))
+         || voices.find(v => /en[-_]US/i.test(v.lang))
+         || voices.find(v => /^en/i.test(v.lang)) || null;
+  }
+  if ("speechSynthesis" in window) {
+    pickVoice();
+    speechSynthesis.onvoiceschanged = pickVoice;
+  }
+  function say(text, rate) {
+    if (!els.optSpeak.checked || !("speechSynthesis" in window)) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice;
+      u.lang = voice ? voice.lang : "en-US";
+      u.rate = rate || 0.8;
+      u.pitch = 1.05;
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  // ---------- helpers ----------
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  const LOOKALIKES = { b: "dp", d: "bp", p: "bq", q: "pg", m: "nw", n: "mu", u: "nv", w: "mv", e: "a", a: "eo", o: "a", i: "l", l: "i", s: "z", h: "n", t: "f", f: "t", y: "v", c: "k", k: "c", g: "q" };
+  function extraLetters(word, count) {
+    const inWord = new Set(word.split(""));
+    const pool = [];
+    word.split("").forEach((ch) => {
+      (LOOKALIKES[ch] || "").split("").forEach((x) => { if (!inWord.has(x)) pool.push(x); });
+    });
+    "abcdefghijklmnopqrstuvwxyz".split("").forEach((x) => { if (!inWord.has(x)) pool.push(x); });
+    const picked = [];
+    for (const x of shuffle([...new Set(pool.slice(0, 8))]).concat(shuffle(pool))) {
+      if (picked.length >= count) break;
+      if (!picked.includes(x)) picked.push(x);
+    }
+    return picked;
+  }
+  function show(section) {
+    [els.setup, els.practice, els.results].forEach(s => s.hidden = s !== section);
+    window.scrollTo(0, 0);
+  }
+  function restartAnim(el, cls) {
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
+  // ---------- practice flow ----------
+  function startRound(words) {
+    list = els.optShuffle.checked ? shuffle(words) : words.slice();
+    index = 0;
+    tricky = new Set();
+    firstTry = 0;
+    els.stars.textContent = "";
+    show(els.practice);
+    nextWord();
+  }
+
+  function nextWord() {
+    if (index >= list.length) return finish();
+    target = list[index];
+    placed = [];
+    tries = 0;
+    locked = false;
+    els.progress.textContent = "Word " + (index + 1) + " of " + list.length;
+    flash(true);
+  }
+
+  function flash(speak) {
+    clearTimeout(flashTimer);
+    els.spellPhase.hidden = true;
+    els.flashPhase.hidden = false;
+    els.flashWord.textContent = target;
+    restartAnim(els.timer, "run");
+    if (speak) say(target);
+    flashTimer = setTimeout(startSpelling, FLASH_MS);
+  }
+
+  function startSpelling() {
+    els.flashPhase.hidden = true;
+    els.spellPhase.hidden = false;
+    els.feedback.textContent = "";
+    els.feedback.className = "feedback";
+    els.next.hidden = true;
+    if (!els.tiles.dataset.word || els.tiles.dataset.word !== target + ":" + index) buildTiles();
+    renderSlots();
+    const firstTile = els.tiles.querySelector(".tile:not(:disabled)");
+    if (firstTile) firstTile.focus({ preventScroll: true });
+  }
+
+  function buildTiles() {
+    const letters = target.split("");
+    const extras = els.optExtra.checked ? extraLetters(target, Math.min(4, Math.max(2, Math.ceil(target.length / 2)))) : [];
+    const all = shuffle(letters.concat(extras));
+    els.tiles.innerHTML = "";
+    els.tiles.dataset.word = target + ":" + index;
+    all.forEach((ch, i) => {
+      const b = document.createElement("button");
+      b.className = "tile";
+      b.textContent = ch;
+      b.dataset.i = i;
+      b.setAttribute("aria-label", "Letter " + ch);
+      b.addEventListener("click", () => pickTile(b));
+      els.tiles.appendChild(b);
+    });
+  }
+
+  function renderSlots() {
+    els.slots.innerHTML = "";
+    for (let i = 0; i < target.length; i++) {
+      const s = document.createElement("button");
+      s.className = "slot";
+      const p = placed[i];
+      if (p) {
+        s.textContent = p.letter;
+        s.classList.add("filled");
+        s.setAttribute("aria-label", "Letter " + p.letter + ". Tap to take it back.");
+        s.addEventListener("click", () => removeAt(i));
+      } else {
+        s.setAttribute("aria-label", "Empty space " + (i + 1));
+        if (i === placed.length) s.classList.add("next");
+        s.tabIndex = -1;
+      }
+      els.slots.appendChild(s);
+    }
+  }
+
+  function pickTile(btn) {
+    if (locked || placed.length >= target.length) return;
+    placed.push({ letter: btn.textContent, tileIndex: btn.dataset.i });
+    btn.disabled = true;
+    els.feedback.textContent = "";
+    els.feedback.className = "feedback";
+    renderSlots();
+    if (placed.length === target.length) check();
+  }
+
+  function removeAt(i) {
+    if (locked) return;
+    const removed = placed.splice(i);
+    removed.forEach((p) => {
+      const t = els.tiles.querySelector('.tile[data-i="' + p.tileIndex + '"]');
+      if (t) t.disabled = false;
+    });
+    els.feedback.textContent = "";
+    els.feedback.className = "feedback";
+    renderSlots();
+  }
+
+  function undo() {
+    if (locked || placed.length === 0) return;
+    removeAt(placed.length - 1);
+  }
+
+  function check() {
+    const guess = placed.map(p => p.letter).join("");
+    const slotEls = els.slots.querySelectorAll(".slot");
+    if (guess === target) {
+      locked = true;
+      slotEls.forEach(s => s.classList.add("right"));
+      restartAnim(els.slots, "pop");
+      if (tries === 0) firstTry++;
+      els.stars.textContent += tries === 0 ? "⭐" : "✨";
+      const cheers = ["You got it!", "Great spelling!", "Super job!", "Way to go!", "Awesome!"];
+      const cheer = cheers[Math.floor(Math.random() * cheers.length)];
+      els.feedback.textContent = cheer;
+      els.feedback.className = "feedback good";
+      say(target.split("").join(", ") + ". " + target + "! " + cheer, 0.85);
+      els.next.textContent = index + 1 >= list.length ? "See my stars" : "Next word";
+      els.next.hidden = false;
+      els.next.focus({ preventScroll: true });
+    } else {
+      tries++;
+      tricky.add(target);
+      placed.forEach((p, i) => { if (p.letter !== target[i]) slotEls[i].classList.add("wrong"); });
+      restartAnim(els.slots, "shake");
+      els.feedback.textContent = tries >= 2 ? "Almost! Tap 👀 Peek to see it again." : "Almost! Tap a pink letter to fix it.";
+      els.feedback.className = "feedback oops";
+      say("Almost! Try again.", 0.9);
+    }
+  }
+
+  function finish() {
+    clearTimeout(flashTimer);
+    const total = list.length;
+    els.bigStars.textContent = "⭐".repeat(Math.min(firstTry, 10)) + (firstTry > 10 ? " +" + (firstTry - 10) : "") || "✨";
+    els.summary.textContent = "You spelled " + firstTry + " of " + total + " words on the first try.";
+    const trickyWords = list.filter(w => tricky.has(w));
+    els.trickyList.innerHTML = "";
+    trickyWords.forEach((w) => {
+      const li = document.createElement("li");
+      li.textContent = w;
+      els.trickyList.appendChild(li);
+    });
+    els.trickyWrap.hidden = trickyWords.length === 0;
+    els.trickyBtn.hidden = trickyWords.length === 0;
+    show(els.results);
+    say(firstTry === total ? "Wow! You spelled every word!" : "Great practice!", 0.9);
+  }
+
+  // ---------- events ----------
+  els.words.addEventListener("input", () => { updateCount(); save(); });
+  [els.optExtra, els.optShuffle, els.optSpeak].forEach(o => o.addEventListener("change", save));
+
+  els.start.addEventListener("click", () => {
+    allWords = parseWords(els.words.value).slice(0, MAX_WORDS);
+    if (!allWords.length) return;
+    save();
+    startRound(allWords);
+  });
+  els.back.addEventListener("click", () => {
+    clearTimeout(flashTimer);
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    show(els.setup);
+  });
+  els.hear.addEventListener("click", () => say(target));
+  els.peek.addEventListener("click", () => { if (!locked) flash(true); });
+  els.undo.addEventListener("click", undo);
+  els.next.addEventListener("click", () => { index++; els.tiles.dataset.word = ""; nextWord(); });
+  els.again.addEventListener("click", () => startRound(allWords));
+  els.trickyBtn.addEventListener("click", () => startRound(list.filter(w => tricky.has(w))));
+  els.edit.addEventListener("click", () => show(els.setup));
+
+  document.addEventListener("keydown", (e) => {
+    if (els.spellPhase.hidden || els.practice.hidden) return;
+    if (e.key === "Backspace") { e.preventDefault(); undo(); return; }
+    if (/^[a-z]$/i.test(e.key)) {
+      const t = [...els.tiles.querySelectorAll(".tile:not(:disabled)")].find(b => b.textContent === e.key.toLowerCase());
+      if (t) pickTile(t);
+    }
+  });
+
+  load();
+  updateCount();
+})();
+</script>
+</body>
+</html>
